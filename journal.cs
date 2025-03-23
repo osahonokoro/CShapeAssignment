@@ -22,6 +22,11 @@ class Journal
         "Do you have new emails?"
     };
 
+    public Journal()
+    {
+        LoadFromFile();
+    }
+
     // Adds a new journal entry
     public void AddEntry()
     {
@@ -49,6 +54,7 @@ class Journal
         {
             entries.RemoveAt(index);
             Console.WriteLine("Entry removed successfully.");
+            SaveAllEntries(); // Update file after removal
         }
         else
         {
@@ -77,7 +83,36 @@ class Journal
     {
         using (StreamWriter writer = new StreamWriter(fileName, true))
         {
-            writer.WriteLine($"[{entry.Date}] {entry.Content}");
+            writer.WriteLine($"{entry.Date.ToString("yyyy-MM-dd HH:mm:ss")} | {entry.Content}");
+        }
+    }
+
+    // Saves all entries (used after deletion)
+    private void SaveAllEntries()
+    {
+        using (StreamWriter writer = new StreamWriter(fileName, false))
+        {
+            foreach (var entry in entries)
+            {
+                writer.WriteLine($"{entry.Date.ToString("yyyy-MM-dd HH:mm:ss")} | {entry.Content}");
+            }
+        }
+    }
+
+    // Loads journal entries from file
+    private void LoadFromFile()
+    {
+        if (File.Exists(fileName))
+        {
+            string[] lines = File.ReadAllLines(fileName);
+            foreach (string line in lines)
+            {
+                string[] parts = line.Split(" | ");
+                if (parts.Length == 2 && DateTime.TryParse(parts[0], out DateTime date))
+                {
+                    entries.Add(new JournalEntry { Date = date, Content = parts[1] });
+                }
+            }
         }
     }
 }
