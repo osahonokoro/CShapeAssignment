@@ -9,3 +9,5 @@ class JournalEntry : EntryMain
         Console.WriteLine($"[{Date.ToShortDateString()}] {Content}\n");
     }
 }
+
+//To force modification

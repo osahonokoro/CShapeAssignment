@@ -9,3 +9,5 @@ abstract class EntryMain
     // Abstract method to display the entry
     public abstract void Display();
 }
+
+//To force commit
