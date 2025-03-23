@@ -1,20 +1,11 @@
 using System;
 
-class JournalEntry
+// A concrete implementation of EntryMain for a journal entry
+class JournalEntry : EntryMain
 {
-    public string Date { get; set; }
-    public string Prompt { get; set; }
-    public string Response { get; set; }
-
-    public JournalEntry(string prompt, string response)
+    // Overrides the abstract method to display the journal entry
+    public override void Display()
     {
-        Date = DateTime.Now.ToShortDateString();
-        Prompt = prompt;
-        Response = response;
-    }
-
-    public override string ToString()
-    {
-        return $"{Date} | {Prompt} | {Response}";
+        Console.WriteLine($"[{Date.ToShortDateString()}] {Content}\n");
     }
 }

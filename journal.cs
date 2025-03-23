@@ -2,62 +2,82 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+// The Journal class manages journal entries and file storage
 class Journal
 {
-    private List<JournalEntry> entries = new List<JournalEntry>();
+    private List<EntryMain> entries = new List<EntryMain>(); // List to store journal entries
+    private string fileName = "journal.txt"; // File where journal entries are saved
 
-    public void AddEntry(string prompt, string response)
+    // List of prompts for journal entries
+    private List<string> prompts = new List<string>
     {
-        entries.Add(new JournalEntry(prompt, response));
-        Console.WriteLine("Entry added successfully!");
+        "What made you happy today?",
+        "What challenge did you overcome today?",
+        "What did you learn today?",
+        "Who inspired you today?",
+        "What are you grateful for today?",
+        "How far have you gone with your CSE210: Programming with Classes?",
+        "How far have you gone with WDD130: Web Fundamentals?",
+        "Were there any notifications today?",
+        "Do you have new emails?"
+    };
+
+    // Adds a new journal entry
+    public void AddEntry()
+    {
+        // Selects a random prompt from the list
+        Random rand = new Random();
+        string prompt = prompts[rand.Next(prompts.Count)];
+        Console.WriteLine($"Prompt: {prompt}");
+        
+        // Get the user's response
+        Console.Write("Your Response: ");
+        string content = Console.ReadLine();
+
+        // Create and store the new entry
+        JournalEntry entry = new JournalEntry { Date = DateTime.Now, Content = content };
+        entries.Add(entry);
+
+        // Save the entry to the file
+        SaveToFile(entry);
     }
 
+    // Removes an entry from the journal by index
+    public void RemoveEntry(int index)
+    {
+        if (index >= 0 && index < entries.Count)
+        {
+            entries.RemoveAt(index);
+            Console.WriteLine("Entry removed successfully.");
+        }
+        else
+        {
+            Console.WriteLine("Invalid entry index.");
+        }
+    }
+
+    // Displays all journal entries
     public void DisplayEntries()
     {
         if (entries.Count == 0)
         {
             Console.WriteLine("No journal entries found.");
-            return;
         }
-
-        Console.WriteLine("\nJournal Entries:");
-        foreach (var entry in entries)
-        {
-            Console.WriteLine(entry);
-        }
-    }
-
-    public void SaveToFile(string filename)
-    {
-        using (StreamWriter writer = new StreamWriter(filename))
+        else
         {
             foreach (var entry in entries)
             {
-                writer.WriteLine($"{entry.Date}~{entry.Prompt}~{entry.Response}");
+                entry.Display();
             }
         }
-        Console.WriteLine("Journal saved successfully!");
     }
 
-    public void LoadFromFile(string filename)
+    // Saves an entry to a text file
+    private void SaveToFile(JournalEntry entry)
     {
-        if (!File.Exists(filename))
+        using (StreamWriter writer = new StreamWriter(fileName, true))
         {
-            Console.WriteLine("File not found.");
-            return;
+            writer.WriteLine($"[{entry.Date}] {entry.Content}");
         }
-
-        entries.Clear();
-        string[] lines = File.ReadAllLines(filename);
-        foreach (string line in lines)
-        {
-            string[] parts = line.Split('~');
-            if (parts.Length == 3)
-            {
-                entries.Add(new JournalEntry(parts[1], parts[2]));
-            }
-        }
-
-        Console.WriteLine("Journal loaded successfully!");
     }
 }
